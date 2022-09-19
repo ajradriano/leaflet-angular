@@ -1,10 +1,7 @@
-# TesteLeaflet
+# Leaflet Map with Angular 8
 
-!Runnig project screenshot(https://github.com/ajradriano/leaflet-angular/blob/main/src/assets/images/screenshot.png?raw=true)
-
-
-
-
+Runnig project screenshot
+- https://github.com/ajradriano/leaflet-angular/blob/main/src/assets/images/screenshot.png?raw=true
 
 NOTE: to run this project, just 'npm install' on root directory, then, 'npm start' or 'ng serve'.
 
