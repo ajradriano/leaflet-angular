@@ -15,8 +15,10 @@ export class AppComponent implements OnInit {
   public title = 'Leaftlet Open Street Map Spike';
 
   private map: any;
+  private defaultLocation: any[] = [-11.628717, -52.703753];
+
   private defaultZoom = 16;
-  private minZoom = 2;
+  private minZoom = 4;
   private MaxZoom = 19;
 
   public marker: any;
@@ -51,6 +53,7 @@ export class AppComponent implements OnInit {
     const osm = L.tileLayer(
       'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
       {
+        minZoom: this.minZoom,
         maxZoom: this.MaxZoom,
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
       }
@@ -62,6 +65,7 @@ export class AppComponent implements OnInit {
     const sat = L.tileLayer(
       'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
       {
+        minZoom: this.minZoom,
         /**
          * When zoom reaches the maxZoom, the view will change to street view.
          */
@@ -84,7 +88,7 @@ export class AppComponent implements OnInit {
      */
     this.map = L.map('map', {
       zoom: this.defaultZoom,
-    }).setView([-11.628717, -52.703753], 4);
+    }).setView(this.defaultLocation, this.minZoom);
 
     /**
      * Listen for the click event to add marker on map.
