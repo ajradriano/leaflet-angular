@@ -1,9 +1,9 @@
 import {Component, OnInit} from '@angular/core';
 
 declare const L: any;
-import {GeoSearchControl} from 'leaflet-geosearch';
-import * as GeoSearch from 'leaflet-geosearch';
 import 'leaflet-search';
+import { HttpClient } from '@angular/common/http';
+import { LatLng } from 'leaflet';
 
 @Component({
   selector: 'app-root',
@@ -16,14 +16,19 @@ export class AppComponent implements OnInit {
 
   private map: any;
   private defaultZoom = 16;
-  private minZoom = 2;
+  private minZoom = 8;
   private MaxZoom = 19;
 
   public marker: any;
   public lat = '';
-  public lng = '';
+  public lon = '';
 
-  constructor() {
+  loading = false;
+  addressList;
+
+  constructor(
+      private http: HttpClient,
+  ) {
   }
 
   ngOnInit() {
@@ -85,7 +90,7 @@ export class AppComponent implements OnInit {
      * Listen for the click event to add marker on map.
      */
     this.map.on('click', (e: any) => {
-      this.setMarkerPoint(e.latlng);
+      this.setMarkerPoint(e.latlng.lat, e.latlng.lng);
     });
 
     /**
@@ -101,41 +106,47 @@ export class AppComponent implements OnInit {
       minZoom: this.minZoom,
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(this.map);
-
-    /**
-     * Set the Search bottom.
-     */
-    this.setSearchBottom();
-  }
-
-  /**
-   * Configure SearchControl
-   */
-  private setSearchBottom() {
-    const searchControl = new (GeoSearchControl as any)({
-      provider: new GeoSearch.OpenStreetMapProvider(),
-      showMarker: false,
-      autoComplete: true,
-      autoCompleteDelay: 100,
-
-    });
-    this.map.addControl(searchControl);
   }
 
   /**
    * Adds the marker when user click in the map
    * using passed parameter.
    */
-  private setMarkerPoint(coords: any): void {
-    console.log(coords);
+  private setMarkerPoint(lat, lon): void {
     this.map.removeLayer(this.marker);
-    this.marker = new L.Marker([coords.lat, coords.lng], {draggable: false});
-    this.lat = coords.lat;
-    this.lng = coords.lng;
+    this.marker = new L.Marker([lat, lon], {draggable: false});
+    this.lat = lat;
+    this.lon = lon;
     this.marker.bindPopup(
-      `<b>Selected Position:</b><br />Lat: ${coords.lat}<br/> Lng: ${coords.lng}`
+      `<b>Selected Position:</b><br />Lat: ${lat}<br/> Lng: ${lon}`
     ).openPopup();
     this.map.addLayer(this.marker);
+  }
+
+  /**
+   * Metodo para busca do endereço na API Nominatim.
+   */
+  public searchAddress(event: string = '') {
+    this.loading = true;
+    const url = `https://nominatim.openstreetmap.org/search?format=json&q=${event}`;
+    this.http.get(url).subscribe(
+        (success) => {
+          this.addressList = success;
+        },
+        (error) => {
+          console.error(error);
+        }
+    );
+  }
+
+  /**
+   * Sets the position based on selected latitude and longitude in the search results.
+   */
+  public setPosition(address) {
+    this.map.panTo(new LatLng(address.lat, address.lon));
+    this.setMarkerPoint(address.lat, address.lon);
+    delete this.addressList;
+    this.loading = false;
   }
 
 }

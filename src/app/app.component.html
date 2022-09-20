@@ -1,13 +1,37 @@
-<p id="pos"></p>
-<div class="mapa">
-  <!--  div that will receive the leaflet map the injection.-->
-  <div id="map"></div>
-  <!--  Following inputs will receive selected latitude and longitude in the map.-->
-  <h4>Selected Position:</h4>
-  <div class="coords">
-    <label for="lat">Latitude:</label>
-    <input value="{{ lat }}" type="text" name="lat" id="lat">
-    <label for="lng">Longitude:</label>
-    <input value="{{ lng }}" type="text" name="lng" id="lng">
+
+
+<div class="container mapa">
+  <div class="input-group mt-3 col-6">
+    <input #address type="text" class="form-control" placeholder="Search for a Address" aria-label="Search for a Address" aria-describedby="button-addon2">
+    <button class="btn btn-outline-secondary" type="button" id="button-addon2" (click)="searchAddress(address.value)">Search</button>
   </div>
+  <div *ngIf="loading">
+    <div *ngIf="addressList?.length > 0; else addressesLoading">
+      <ul class="list-group">
+        <li class="list-group-item cursor-pointer"
+            *ngFor="let address of addressList"
+            (click)="setPosition(address)">
+          {{ address?.display_name }}
+        </li>
+      </ul>
+    </div>
+    <ng-template #addressesLoading>
+      <div>Loading</div>
+    </ng-template>
+  </div>
+  <!--  div that will receive the leaflet map the injection.-->
+  <div id="map" class="mt-3"></div>
+  <!--  Following inputs will receive selected latitude and longitude in the map.-->
+  <h4 class="my-3">Selected Position:</h4>
+  <div class="d-flex align-items-center justify-content-center">
+    <div class="input-group">
+      <span class="input-group-text">Latitude</span>
+      <input value="{{ lat }}" type="text" aria-label="First name" class="form-control" readonly>
+    </div>
+    <div class="input-group">
+      <span class="input-group-text">Longitude</span>
+      <input value="{{ lon }}" type="text" aria-label="First name" class="form-control" readonly>
+    </div>
+  </div>
+
 </div>
