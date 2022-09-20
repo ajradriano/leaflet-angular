@@ -16,7 +16,7 @@ export class AppComponent implements OnInit {
 
   private map: any;
   private defaultZoom = 16;
-  private minZoom = 8;
+  private minZoom = 2;
   private MaxZoom = 19;
 
   public marker: any;
@@ -84,7 +84,7 @@ export class AppComponent implements OnInit {
      */
     this.map = L.map('map', {
       zoom: this.defaultZoom,
-    }).locate({watch: true, setView: true});
+    }).setView([-11.628717, -52.703753], 4);
 
     /**
      * Listen for the click event to add marker on map.
@@ -143,8 +143,8 @@ export class AppComponent implements OnInit {
    * Sets the position based on selected latitude and longitude in the search results.
    */
   public setPosition(address) {
-    this.map.panTo(new LatLng(address.lat, address.lon));
-    this.setMarkerPoint(address.lat, address.lon);
+    this.map.flyTo(new LatLng(address.lat, address.lon), 14, {duration: 2, animate: true});
+    // this.setMarkerPoint(address.lat, address.lon);
     delete this.addressList;
     this.loading = false;
   }
