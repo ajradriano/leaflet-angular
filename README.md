@@ -29,7 +29,12 @@ NOTE: to run this project, just 'npm install' on root directory, then, 'npm star
 - npm install --save leaflet-geosearch
 
 #### DevDependencies in package.json
-- "@types/geojson": "7946.0.8",
+- "@types/geojson": "7946.0.8"
+
+#### Bootstrap 5.2.1
+- npm i bootstrap
+
+---
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 8.3.8.
 
