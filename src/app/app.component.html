@@ -1,36 +1,51 @@
 
 
 <div class="container mapa">
-  <div class="input-group mt-3 col-6">
-    <input #address type="text" class="form-control" placeholder="Search for a Address" aria-label="Search for a Address" aria-describedby="button-addon2">
-    <button class="btn btn-outline-secondary" type="button" id="button-addon2" (click)="searchAddress(address.value)">Search</button>
-  </div>
-  <div *ngIf="loading">
-    <div *ngIf="addressList?.length > 0; else addressesLoading">
-      <ul class="list-group">
-        <li class="list-group-item cursor-pointer"
-            *ngFor="let address of addressList"
-            (click)="setPosition(address)">
-          {{ address?.display_name }}
-        </li>
-      </ul>
+
+  <div class="row">
+    <div class="locate my-2 col">
+      <button class="btn btn-info" type="button" id="button-addon2" (click)="locate()">My Location</button>
     </div>
-    <ng-template #addressesLoading>
-      <div>Loading</div>
-    </ng-template>
+    <div class="input-group my-2 col">
+      <input #address type="text" class="form-control" placeholder="Search for a Address" aria-label="Search for a Address" aria-describedby="button-addon2">
+      <button class="btn btn-outline-secondary" type="button" id="button-addon2" (click)="searchAddress('search', 'q='+address.value)">Search</button>
+    </div>
   </div>
+
   <!--  div that will receive the leaflet map the injection.-->
   <div id="map" class="mt-3"></div>
+
+  <div class="row">
+    <div class="input-group my-2 col">
+      <span class="input-group-text">CEP</span>
+      <input value="{{cep}}" type="text" class="form-control" (change)="changeSearch('cep', $event.target.value)">
+    </div>
+    <div class="input-group my-2 col">
+      <span class="input-group-text">cidade</span>
+      <input value="{{cidade}}" type="text" class="form-control" (change)="changeSearch('cidade', $event.target.value)">
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="input-group my-2 col">
+      <span class="input-group-text">Logradouro</span>
+      <input value="{{logradouro}}" type="text" class="form-control" (change)="changeSearch('logradouro', $event.target.value)">
+    </div>
+    <div class="input-group my-2 col">
+      <span class="input-group-text">Bairro</span>
+      <input value="{{bairro}}" type="text" class="form-control" (change)="changeSearch('bairro', $event.target.value)">
+    </div>
+  </div>
   <!--  Following inputs will receive selected latitude and longitude in the map.-->
   <h4 class="my-3">Selected Position:</h4>
   <div class="d-flex align-items-center justify-content-center">
     <div class="input-group">
       <span class="input-group-text">Latitude</span>
-      <input value="{{ lat }}" type="text" aria-label="First name" class="form-control" readonly>
+      <input value="{{ lat }}" type="text" class="form-control" readonly>
     </div>
     <div class="input-group">
       <span class="input-group-text">Longitude</span>
-      <input value="{{ lon }}" type="text" aria-label="First name" class="form-control" readonly>
+      <input value="{{ lon }}" type="text" class="form-control" readonly>
     </div>
   </div>
 

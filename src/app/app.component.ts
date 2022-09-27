@@ -24,6 +24,12 @@ export class AppComponent implements OnInit {
   public marker: any;
   public lat = '';
   public lon = '';
+  query = [];
+  logradouro = '';
+  cidade = '';
+  cep = '';
+  bairro = '';
+  numero = '';
 
   loading = false;
   addressList;
@@ -125,17 +131,29 @@ export class AppComponent implements OnInit {
       `<b>Selected Position:</b><br />Lat: ${lat}<br/> Lng: ${lon}`
     ).openPopup();
     this.map.addLayer(this.marker);
+    this.searchAddress('reverse', `lat=${this.lat}&lon=${this.lon}&zoom=18`)
   }
 
   /**
    * Metodo para busca do endereço na API Nominatim.
    */
-  public searchAddress(event: string = '') {
+  public searchAddress(type, event: string = '') {
+    let isReverse = (type == 'reverse') ? 'true' : false;
     this.loading = true;
-    const url = `https://nominatim.openstreetmap.org/search?format=json&q=${event}`;
+    const url = `https://nominatim.openstreetmap.org/${type}?${event}&format=json`;
     this.http.get(url).subscribe(
         (success) => {
-          this.addressList = success;
+          if (isReverse) {
+            this.setPosition(success);
+            this.flyToPosition(success['lat'], success['lon']);
+            return;
+          }
+          if (!success[0]) {
+            console.error('Não Encontrado')
+            return;
+          }
+          
+          this.setPosition(success[0]);
         },
         (error) => {
           console.error(error);
@@ -147,10 +165,62 @@ export class AppComponent implements OnInit {
    * Sets the position based on selected latitude and longitude in the search results.
    */
   public setPosition(address) {
-    this.map.flyTo(new LatLng(address.lat, address.lon), 14, {duration: 2, animate: true});
+    this.setFields(address);
     // this.setMarkerPoint(address.lat, address.lon);
     delete this.addressList;
     this.loading = false;
+  }
+
+  flyToPosition(lat, lon) {
+    this.map.flyTo(new LatLng(lat, lon), 18, {duration: 2, animate: true});
+  }
+
+  setFields(address) {
+    this.cep = address.address.postcode || '';
+    this.cidade = address.address.town || address.address.city;
+    this.logradouro = address.address.road;
+    this.bairro = address.address.suburb;
+    this.lat = address.lat;
+    this.lon = address.lon;
+
+  }
+
+  public async changeSearch(param, value) {
+    switch (param) {
+      case 'cep':
+        this.cep = value;
+        this.cidade = '';
+        this.logradouro = '';
+        this.bairro = '';
+
+        break;
+      case 'cidade':
+        this.cidade = value;
+        this.logradouro = '';
+        this.bairro = '';
+
+        break;
+      case 'logradouro':
+        this.logradouro = value;
+        this.bairro = '';
+
+        break;
+      case 'bairro':
+        this.bairro = value;
+        break;
+    
+      default:
+        break;
+    };
+    
+    this.searchAddress(
+      'search',
+      `postalcode=${this.cep}&city=${this.cidade}&street=${this.logradouro}&suburb=${this.bairro}`
+    )    
+  }
+
+  locate() {
+    (this.map.locate({setView: true, watch: true}));
   }
 
 }
